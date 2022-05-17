@@ -1,6 +1,7 @@
 # RandomPetBot/src/main.py
 import logging
 import os
+import time
 import random
 
 import requests
@@ -9,13 +10,25 @@ from telegram import ReplyKeyboardMarkup
 from telegram.ext import CommandHandler, Updater
 
 load_dotenv()
+os.path.expanduser('~')
+
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    level=logging.DEBUG,
+    filename='main.log', filemode='w',
+    format='%(asctime)s, %(levelname)s, %(name)s, %(message)s'
 )
+logger = logging.getLogger(__name__)
 
 secret_token = os.getenv('TG_TOKEN')
+if secret_token is None:
+    logger.error('Токен TG_TOKEN отсутсвует!')
+    raise ValueError('Токен TG_TOKEN отсутсвует!')
+
 secret_token_giphy = os.getenv('GIPHY_TOKEN')
+if secret_token_giphy is None:
+    logger.error('Токен GIPHY_TOKEN отсутсвует!')
+    raise ValueError('Токен GIPHY_TOKEN отсутсвует!')
+
 updater = Updater(token=secret_token, use_context=True)
 
 rating = 'pg-13'
@@ -151,6 +164,7 @@ def wake_up(update, context):
 
 
 def main():
+
     updater = Updater(token=secret_token)
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
     updater.dispatcher.add_handler(
@@ -167,3 +181,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
